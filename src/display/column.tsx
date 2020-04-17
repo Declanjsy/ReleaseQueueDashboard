@@ -1,41 +1,52 @@
 import { ReactElement, useState } from "react";
-import { Paper, makeStyles, createStyles } from "@material-ui/core";
+import { Paper, makeStyles, createStyles, Theme } from "@material-ui/core";
 import React from "react";
 import * as Bowser from "bowser";
 
 export interface IColumnProps {
 	tiles: ReactElement[];
 	columnTitle: string;
+	background:string
 }
 
-const columnStyle = makeStyles((visible:boolean) => 
-	createStyles({
-		root:{
-			display: visible ? "flex" : "none",
+export interface IStyle{
+	visible:boolean,
+	background:string
+}
+
+const columnStyle = makeStyles<Theme,IStyle>((theme:Theme) => 
+	({
+		root:styleProps=>({
+			display: styleProps.visible ? "flex" : "none",
 			flexDirection:  "column",
-			marginLeft:"1%",
+			marginLeft:"2.5%",
 			height: 900,
 			width: Bowser.parse(window.navigator.userAgent).platform.type === "mobile" ? "95%" : "95%",
-		},
-		paper: {
+			backgroundColor:styleProps.background
+		}),
+		paper: ()=>({
 			paddingLeft: "1%",
 			paddingRight: "1%",
 			paddingTop: "1%",
 			overflow: "auto",
 			background: "#00b3ff"
-		},
-		p: {
+		}),
+		p: ()=>({
 			textAlign: "left",
 			color: "#636363",
 			margin: 5
-		}
+		})
 	})
 );
 
 export default function Column(props: IColumnProps) {
 	const [tiles, setTiles] = useState<ReactElement[]>(props.tiles);
-	const [visible, setVisible] = useState<boolean>(false);
-	const style = columnStyle(visible);
+	const [visible, setVisible] = useState<boolean>(true);
+	const styleProps: IStyle = {
+		visible:visible,
+		background:props.background
+	}
+	const style = columnStyle(styleProps);
 	return (
 		<div className={style.root}>
 			<p className={style.p}>{props.columnTitle}</p>
